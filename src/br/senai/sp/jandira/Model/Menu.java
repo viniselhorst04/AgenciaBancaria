@@ -5,8 +5,8 @@ import java.util.Scanner;
 public class Menu {
 
     Scanner scanner = new Scanner(System.in);
-    Cliente cliente = new Cliente();
-    Conta conta = new Conta();
+    Cliente refCliente = new Cliente();
+    Conta refConta = new Conta();
 
     public void executarMenu(){
 
@@ -14,14 +14,17 @@ public class Menu {
 
         while (!exit) {
 
-            System.out.println(" --------- Menu --------- \n");
+            System.out.println(" |--------------------------| ");
+            System.out.println(" |           Menu           | ");
+            System.out.println(" |--------------------------| \n");
             System.out.println(" 1 - Cadastrar Cliente");
-            System.out.println(" 2 - Cadastrar Conta");
+            System.out.println(" 2 - Gerar Conta");
             System.out.println(" 3 - Consultar Saldo");
             System.out.println(" 4 - Realizar Deposito");
             System.out.println(" 5 - Realizar Saque");
-            System.out.println(" 6 - Sair");
-            System.out.println("\n ------------------------ ");
+            System.out.println(" 6 - Realizar Transferencia");
+            System.out.println(" 7 - Sair");
+            System.out.println("\n |------------------------|\n ");
 
             System.out.print("Escolha a Opção: ");
             int optionUser = scanner.nextInt();
@@ -30,32 +33,102 @@ public class Menu {
             switch (optionUser) {
 
                 case 1:
+                    Cliente cliente = new Cliente();
                     cliente.cadastrarCliente();
+                    refCliente.addCliente(cliente);
                     break;
+
                 case 2:
-                    System.out.println("Feature in Development!");
-                    break;
-                case 3:
-                    conta.consultarSaldo();
-                    break;
-                case 4:
-                    System.out.println("Informe o valor que deseja depositar: ");
-                    double valorDeposito = scanner.nextDouble();
+                    System.out.println("Informe o CPF do Titular: ");
+                    long cpfTitular = scanner.nextLong();
                     scanner.nextLine();
-                    conta.realizarDeposito(valorDeposito);
+
+                    Cliente clienteConta = refCliente.pesquisarCliente(cpfTitular);
+
+                    if (clienteConta !=null){
+                        Conta conta = new Conta();
+                        conta.gerarConta(clienteConta);
+                        refConta.addConta(conta);
+                        System.out.println("Conta criada com sucesso!");
+
+                    }else {
+                        System.out.println("O cliente não tem cadastro!");
+                    }
+                    break;
+
+                case 3:
+                    System.out.println("Informe o CPF do Titular: ");
+                    long cpfSaldo = scanner.nextLong();
+                    scanner.nextLine();
+                    Conta contaSaldo= refConta.pesquisarConta(cpfSaldo);
+
+                    if (contaSaldo !=null){
+                        contaSaldo.consultarSaldo();
+                    }else{
+                        System.out.println("O cliente não tem conta!");
+                    }
+
 
                     break;
-                case 5:
-                    System.out.println("Informe o valor que deseja sacar: ");
-                    double valorSaque = scanner.nextDouble();
+
+                case 4:
+                    System.out.println("Informe o CPF do Titular: ");
+                    long cpfDeposito = scanner.nextLong();
                     scanner.nextLine();
-                    conta.realizarSaque(valorSaque);
+                    Conta contaDeposito= refConta.pesquisarConta(cpfDeposito);
+
+                    if (contaDeposito !=null){
+                        System.out.println("Informe o valor do Depósito: ");
+                        double valorDeposito = scanner.nextDouble();
+                        contaDeposito.realizarDeposito(valorDeposito);
+                    }else{
+                        System.out.println("O cliente não tem conta!");
+                    }
+
                     break;
+
+                case 5:
+                    System.out.println("Informe o CPF do Titular: ");
+                    long cpfSaque = scanner.nextLong();
+                    scanner.nextLine();
+                    Conta contaSaque = refConta.pesquisarConta(cpfSaque);
+
+                    if (contaSaque !=null){
+                        System.out.println("Informe o valor do Saque: ");
+                        double valorSaque = scanner.nextDouble();
+                        contaSaque.realizarDeposito(valorSaque);
+                    }else{
+                        System.out.println("O cliente não tem conta!");
+                    }
+                    break;
+
                 case 6:
 
-                    exit = true;
+                    System.out.println("Informe o CPF do Titular:");
+                    long cpfOrigem = scanner.nextLong();
+                    scanner.nextLine();
+
+                    System.out.println("Informe o CPF do Destinatário:");
+                    long cpfDestinatario = scanner.nextLong();
+                    scanner.nextLine();
+
+                    Conta contaOrigem = refConta.pesquisarConta(cpfOrigem);
+                    Conta contaDestinatario = refConta.pesquisarConta(cpfDestinatario);
+
+                    if (contaOrigem !=null && contaDestinatario !=null){
+
+                        contaOrigem.realizarTranferencia(contaOrigem, contaDestinatario);
+
+                    }else{
+                        System.out.println("O CPF do Titular ou do Destinatario está incorreto!");
+                    }
 
                     break;
+
+                case 7:
+                    exit = true;
+                    break;
+
             }
 
         }
